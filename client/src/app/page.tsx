@@ -7,11 +7,17 @@ import { FiPause, FiPlus } from "react-icons/fi";
 import { useState } from "react";
 import axios from "axios";
 import ResponseLoading from "./ui/Conversation/responseLoading";
+import Loading from "./loading";
 
 export default function Home() {
+  const [isLoading, setIsLoading] = useState(true);
   const [question, setQuestion] = useState("");
   const [questionsList, setQuestionsList] = useState([]);
   const [isGenerating, setIsGenerating] = useState(false);
+
+  setTimeout(() => {
+    setIsLoading(false);
+  }, 5000);
 
   {/* Display question component and access backend API */}
   const addQuestion = () => {
@@ -62,35 +68,39 @@ export default function Home() {
 
   return (
     <NextUIProvider className="w-full h-full">
-      <main className="flex w-full h-full flex-col items-center justify-end">
-        <ScrollShadow size={10} hideScrollBar className="w-[96%] h-[85%] flex flex-col mx-auto">
-          {questionsList.map((question, index) => (
-            <div key={index} className="flex flex-col">
-              <Question question={question.question} />
-              { isGenerating ? <ResponseLoading /> : <Response id={index} prompt={question.question} response={question.response} /> }
-            </div>
-          ))}
-        </ScrollShadow>
-        <div className="w-[96%] h-[10%] flex flex-row justify-evenly mx-auto">
-          <Input 
-            type="text"
-            size="lg"
-            className="w-[92%] self-center"
-            placeholder="Ask Rocket..." 
-            isDisabled={isGenerating}
-            value={question} 
-            onChange={(e) => setQuestion(e.target.value)} 
-          />
-          <Button 
-            size="lg" 
-            className="aspect-square rounded-2xl border-2 bg-transparent border-white text-white self-center" 
-            isDisabled={isGenerating}
-            onClick={addQuestion}
-          >
-            { isGenerating ? <FiPause /> : <FiPlus /> }
-          </Button>
-        </div>
-      </main>
+      { isLoading ? 
+        <Loading /> 
+      : 
+        <main className="flex w-full h-full flex-col items-center justify-end">
+          <ScrollShadow size={10} hideScrollBar className="w-[96%] h-[85%] flex flex-col mx-auto">
+            {questionsList.map((question, index) => (
+              <div key={index} className="flex flex-col">
+                <Question question={question.question} />
+                { isGenerating ? <ResponseLoading /> : <Response id={index} prompt={question.question} response={question.response} /> }
+              </div>
+            ))}
+          </ScrollShadow>
+          <div className="w-[96%] h-[10%] flex flex-row justify-evenly mx-auto">
+            <Input 
+              type="text"
+              size="lg"
+              className="w-[92%] self-center"
+              placeholder="Ask Rocket..." 
+              isDisabled={isGenerating}
+              value={question} 
+              onChange={(e) => setQuestion(e.target.value)} 
+            />
+            <Button 
+              size="lg" 
+              className="aspect-square rounded-2xl border-2 bg-transparent border-white text-white self-center" 
+              isDisabled={isGenerating}
+              onClick={addQuestion}
+            >
+              { isGenerating ? <FiPause /> : <FiPlus /> }
+            </Button>
+          </div>
+        </main>
+      }
     </NextUIProvider>
   );
 }
